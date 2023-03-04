@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - feat/*
+      - 9-feat/*
 
 jobs:
   build:
