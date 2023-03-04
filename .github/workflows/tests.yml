@@ -12,7 +12,7 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npx jest --coverage --coverageReporters json-summary | tee ./coverage.txt
+        run: npx jest --coverage | tee ./coverage.txt
 
       - name: Jest Coverage Comment
         uses: MishaKav/jest-coverage-comment@v1.0.22
