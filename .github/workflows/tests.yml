@@ -1,46 +1,35 @@
-name: Tests CI
-
-on: [push, pull_request]
+name: Update Coverage in README
+on:
+  push:
 
 jobs:
-  test:
+  update-coverage-in-readme:
+    name: Update Coverage in README
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install modules
-        run: yarn
-      - name: Run tests
-        run: |
-          npx jest --coverage | tee ./coverage.txt
+
       - name: Jest Coverage Comment
-        uses: MishaKav/jest-coverage-comment@v1.0.22
+        id: coverageComment
+        uses: MishaKav/jest-coverage-comment@main
         with:
-          coverage-path: ./coverage.txt
+          hide-comment: true
+          coverage-summary-path: ./coverage/coverage-summary.json
 
-      - name: Tests ✔️
-        if: ${{ success() }}
+      - name: Check the output coverage
         run: |
-          curl --request POST \
-          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          --header 'content-type: application/json' \
-          --data '{
-            "context": "tests",
-            "state": "success",
-            "description": "Tests passed",
-            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          }'
+          echo "Coverage Percentage - ${{ steps.coverageComment.outputs.coverage }}"
+          echo "Coverage Color - ${{ steps.coverageComment.outputs.color }}"
+          echo "Summary HTML - ${{ steps.coverageComment.outputs.summaryHtml }}"
 
-      - name: Tests ❌
-        if: ${{ failure() }}
-        run: |
-          curl --request POST \
-          --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          --header 'content-type: application/json' \
-          --data '{
-            "context": "tests",
-            "state": "failure",
-            "description": "Tests failed",
-            "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          }'
+      - name: Create the badge
+        if: github.ref == 'refs/heads/main'
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.JEST_COVERAGE_COMMENT }}
+          gistID: 5e90d640f8c212ab7bbac38f72323f80
+          filename: jest-coverage-comment__main.json
+          label: Coverage
+          message: ${{ steps.coverageComment.outputs.coverage }}%
+          color: ${{ steps.coverageComment.outputs.color }}
+          namedLogo: javascript
