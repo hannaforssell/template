@@ -1,7 +1,10 @@
-import axios from 'axios';
+import Axios from 'axios';
+import { setupCache } from 'axios-cache-interceptor';
 import { IGetPodcastsResponse } from '../models/IGetPodcastsResponse';
 
 const BASE_URL = `https://api.sr.se/api/v2/programs/index`;
+
+const axios = setupCache(Axios); 
 
 export async function getPodcasts(categoryId: number, page: number): Promise<IGetPodcastsResponse> {
     return axios({
@@ -13,6 +16,7 @@ export async function getPodcasts(categoryId: number, page: number): Promise<IGe
             format: 'json'
         }
     }).then((data) => {
+        console.log(data.cached);
         return data.data;
     }).catch(() => {
         return {
