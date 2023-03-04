@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/humorpoddar/',
+  base: '/template/',
   define: {
     'process.env': {},
   },

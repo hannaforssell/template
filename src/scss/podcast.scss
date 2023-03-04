@@ -1,0 +1,40 @@
+.single-podcast {
+    display: flex;
+    padding: 10px 10px;
+    position: relative;
+  
+    .podcast-image {
+      width: 70px;
+      height: 70px;
+      position: absolute;
+      top: 50%;
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+    }
+  
+    .podcast-text-container {
+      padding-left: 90px;
+      padding-right: 10px;
+  
+      .podcast-name {
+        margin: 0;
+      }
+  
+      .podcast-description {
+        margin: 0;
+      }
+    }
+  }
+  
+  @media only screen and (min-width: 768px) {
+    .single-podcast {
+      .podcast-image {
+        width: 150px;
+        height: 150px;
+        position: relative;
+        top: 0;
+        -ms-transform: translateY(0);
+        transform: translateY(0);
+      }
+    }
+  }
