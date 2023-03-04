@@ -11,12 +11,10 @@ jobs:
         run: yarn
       - name: Run tests
         run: yarn test --coverage
-      - name: Jest coverage report
-        uses: ArtiomTr/jest-coverage-report-action@v2.2.1
+      - name: Jest Coverage Comment
+        uses: MishaKav/jest-coverage-comment@v1.0.22
 
-
-
-      - name: Tests ✅
+      - name: Tests ✔️
         if: ${{ success() }}
         run: |
           curl --request POST \
@@ -30,7 +28,7 @@ jobs:
             "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           }'
 
-      - name: Tests 🚨
+      - name: Tests ❌
         if: ${{ failure() }}
         run: |
           curl --request POST \
