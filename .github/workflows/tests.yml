@@ -11,6 +11,9 @@ jobs:
         run: yarn
       - name: Run tests
         run: yarn test --coverage
+      - name: Jest coverage report
+      - uses: ArtiomTr/jest-coverage-report-action@v2.2.1
+
 
 
       - name: Tests ✅
