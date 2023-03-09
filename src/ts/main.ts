@@ -1,6 +1,12 @@
 import '../scss/style.scss'
-import { init } from './podcastApp'
+import { Category } from './models/Category';
+import { PodcastApp } from './podcastApp'
 
 const container = document.getElementById('mainContainer') as HTMLDivElement;
+const containerTwo = document.getElementById('secContainer') as HTMLDivElement;
 
-init(container);
+let humorApp = new PodcastApp(container, Category.Humor);
+let seApp = new PodcastApp(containerTwo, Category.SomethingElse);
+
+humorApp.init();
+seApp.init();

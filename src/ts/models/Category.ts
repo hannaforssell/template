@@ -1,3 +1,4 @@
 export enum Category {
-    Humor = 133
+    Humor = 133,
+    SomethingElse = 10
 }

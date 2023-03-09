@@ -2,6 +2,7 @@
 * @jest-environment jsdom
 */
 
+import { Category } from "../ts/models/Category";
 import * as podcastApp from "../ts/podcastApp";
 
 jest.mock('../ts/services/podcastService');
@@ -17,7 +18,8 @@ describe('addPodcasts', () => {
         let mainContainer = document.getElementById('mainContainer') as HTMLDivElement;
 
         // Act
-        await podcastApp.init(mainContainer);
+        let app = new podcastApp.PodcastApp(mainContainer, Category.Humor);
+        await app.init();
 
         // Asserts
         let podcastDivs = mainContainer.getElementsByClassName('single-podcast');
@@ -30,7 +32,8 @@ describe('addPodcasts', () => {
         let mainContainer = document.getElementById('mainContainer') as HTMLDivElement;
 
         // Act
-        await podcastApp.init(mainContainer);
+        let app = new podcastApp.PodcastApp(mainContainer, Category.Humor);
+        await app.init();
 
         // Asserts
         let podcastDiv1 = mainContainer.querySelectorAll('.single-podcast')[0];

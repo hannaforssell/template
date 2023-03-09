@@ -1,4 +1,8 @@
-.single-podcast {
+.podcastContainer {
+  overflow-y: scroll;
+  height: 100vh;
+
+  .single-podcast {
     display: flex;
     padding: 10px 10px;
     position: relative;
@@ -24,9 +28,11 @@
         margin: 0;
       }
     }
-  }
+}
+}
   
-  @media only screen and (min-width: 768px) {
+@media only screen and (min-width: 768px) {
+  .podcastContainer {
     .single-podcast {
       .podcast-image {
         width: 150px;
@@ -38,3 +44,4 @@
       }
     }
   }
+}

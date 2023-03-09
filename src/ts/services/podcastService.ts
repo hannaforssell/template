@@ -10,7 +10,9 @@ export async function getPodcasts(categoryId: number, page: number): Promise<IGe
         params: {
             programcategoryid: categoryId,
             page: page,
-            format: 'json'
+            format: 'json',
+            size: 10,
+            sort: ''
         }
     }).then((data) => {
         return data.data;

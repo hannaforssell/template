@@ -1,69 +1,77 @@
 import { Category } from "./models/Category";
 import { IProgram } from "./models/IProgram";
 import { getPodcasts } from "./services/podcastService";
+import { v4 as uuidv4 } from 'uuid';
 
-let currentPage = 1;
-let totalPages: number | null = null;
-let mainContainer: HTMLDivElement;
-let podcastContainer: HTMLDivElement;
-let errorMsgContainer: HTMLDivElement;
+export class PodcastApp {
+    private currentPage = 1;
+    private totalPages: number | null = null;
+    private podcastContainer: HTMLElement;
+    private errorMsgContainer: HTMLElement;
+    private id: string;
+    public isReady = false;
 
-export async function init(container: HTMLDivElement) {
-    mainContainer = container;
+    constructor(private mainContainer: HTMLDivElement, private category: Category) {
+        this.id = uuidv4();
 
-    mainContainer.innerHTML = /*html*/ `
-        <section id="podcastContainer"></section>
-        <section id="errorMsgContainer"></section>
-    `;
-
-    podcastContainer = mainContainer.querySelector('#podcastContainer') as HTMLDivElement;
-    errorMsgContainer = mainContainer.querySelector('#errorMsgContainer') as HTMLDivElement;
-
-    addPodcasts();
-
-    document.addEventListener('DOMContentLoaded', function () {
-        document.addEventListener('scroll', handleScroll);
-    });
-}
-
-export async function addPodcasts(page: number = 1) {
-    try {
-        let response = await getPodcasts(Category.Humor, page);
-        totalPages = response.pagination.totalpages;
-
-        if (response.programs.length > 0) {
-            createHTML(response.programs);
-        }
-
-    } catch {
-        errorMsgContainer.innerHTML = 'Åh nej! Nu blev det något fel..';
-    }
-}
-
-function createHTML(podcasts: IProgram[]) {
-    for (const podcast of podcasts) {
-        podcastContainer.innerHTML += /*html*/ `
-            <article class="single-podcast">
-                <img src="${podcast.programimage}" alt="${podcast.name}" class="podcast-image">
-                <div class="podcast-text-container">
-                    <h3 class="podcast-name">${podcast.name}</h3>
-                    <p class="podcast-description">${podcast.description}</p>
-                </div>
-            </article>
-            <hr>
+        this.mainContainer.innerHTML = /*html*/ `
+            <section id="podcastContainer_${this.id}" class="podcastContainer"></section>
+            <section id="errorMsgContainer_${this.id}"></section>
         `;
+
+        this.podcastContainer = this.mainContainer.querySelector(`#podcastContainer_${this.id}`) as HTMLElement;
+        this.errorMsgContainer = this.mainContainer.querySelector(`#errorMsgContainer_${this.id}`) as HTMLElement;
     }
-}
 
-async function handleScroll() {
-    let documentHeight = document.body.scrollHeight;
-    let currentScroll = window.scrollY + window.innerHeight;
-    let modifier = 50;
+    public async init() {
+        await this.addPodcasts(this.category);
 
-    if ((currentScroll + modifier > documentHeight) && (totalPages !== null && currentPage <= totalPages)) {
-        document.removeEventListener('scroll', handleScroll);
-        currentPage++;
-        await addPodcasts(currentPage);
-        document.addEventListener('scroll', handleScroll);
+        this.podcastContainer.addEventListener('scroll', () => {
+            this.handleScroll(this);
+        });
+    }
+
+    private async addPodcasts(category: Category, page: number = 1) {
+        try {
+            let response = await getPodcasts(category, page);
+            this.totalPages = response.pagination.totalpages;
+
+            if (response.programs.length > 0) {
+                this.createHTML(response.programs);
+            }
+
+        } catch {
+            this.errorMsgContainer.innerHTML = 'Åh nej! Nu blev det något fel..';
+        }
+        this.isReady = true;
+    }
+
+    private createHTML(podcasts: IProgram[]) {
+        for (const podcast of podcasts) {
+            this.podcastContainer.innerHTML += /*html*/ `
+                <article class="single-podcast">
+                    <img src="${podcast.programimage}" alt="${podcast.name}" class="podcast-image">
+                    <div class="podcast-text-container">
+                        <h3 class="podcast-name">${podcast.name}</h3>
+                        <p class="podcast-description">${podcast.description}</p>
+                    </div>
+                </article>
+                <hr>
+            `;
+        }
+    }
+
+    private async handleScroll(app: PodcastApp) {
+
+        let currentScroll = app.podcastContainer.scrollTop;
+        let maxScroll = app.podcastContainer.scrollHeight - app.podcastContainer.offsetHeight;
+        let modifier = 50;
+
+        if ((currentScroll + modifier > maxScroll) && (this.totalPages !== null && this.currentPage <= this.totalPages)) {
+            app.podcastContainer.removeEventListener('scroll', () => this.handleScroll(app));
+            this.currentPage++;
+            await this.addPodcasts(this.category, this.currentPage);
+            app.podcastContainer.addEventListener('scroll', () => this.handleScroll(app));
+        }
     }
 }
